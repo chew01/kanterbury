@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"github.com/chew01/kanterbury/utils"
 	"github.com/elazarl/goproxy"
+	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -47,4 +50,20 @@ func NewProxy() *Proxy {
 	server.OnRequest().HandleConnect(goproxy.FuncHttpsHandler(proxy.handleHttps))
 
 	return proxy
+}
+
+func (p *Proxy) Start() {
+	sigs := make(chan os.Signal)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		<-sigs
+		fmt.Println("Shutting down")
+		os.Exit(0)
+	}()
+
+	ipstring := utils.GetOutboundIP()
+
+	fmt.Printf("Proxy server listening on %s:8080\n", ipstring)
+	utils.Must(http.ListenAndServe(":8080", p.Server))
 }
