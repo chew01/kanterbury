@@ -37,6 +37,9 @@ func (p *Proxy) handleReq(req *http.Request, _ *goproxy.ProxyCtx) (*http.Request
 			var startup StartupData
 			utils.Must(json.Unmarshal(body, &player))
 			utils.Must(json.Unmarshal(body, &startup))
+
+			player.GameWorld = utils.FormatWorld(player.GameWorld)
+
 			p.State.Player = &player
 			p.State.Startup = &startup
 		case "writeRoundLog":
@@ -52,6 +55,11 @@ func (p *Proxy) handleReq(req *http.Request, _ *goproxy.ProxyCtx) (*http.Request
 			var character CharacterData
 			utils.Must(json.Unmarshal(body, &player))
 			utils.Must(json.Unmarshal(body, &character))
+
+			player.GameWorld = utils.FormatWorld(player.GameWorld)
+			character.Name = utils.FormatName(character.Name)
+			character.Level = utils.FormatLevel(character.Level)
+
 			p.State.Player = &player
 			p.State.Character = &character
 		}
