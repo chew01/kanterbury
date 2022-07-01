@@ -24,7 +24,8 @@ type Proxy struct {
 func NewProxy() *Proxy {
 	server := goproxy.NewProxyHttpServer()
 	state := &GameState{
-		Player:    &PlayerData{StartTime: time.Now().Unix()},
+		Player:    &PlayerData{},
+		Startup:   &StartupData{StartTime: time.Now().Unix()},
 		Character: &CharacterData{},
 		Activity:  &ActivityData{},
 	}
