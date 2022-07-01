@@ -49,6 +49,8 @@ func (p *Proxy) handleReq(req *http.Request, _ *goproxy.ProxyCtx) (*http.Request
 			utils.Must(json.Unmarshal(body, &character))
 			p.State.Character = &character
 		}
+
+		p.State.Ping()
 	}
 
 	return req, nil
