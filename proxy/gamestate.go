@@ -2,6 +2,7 @@ package proxy
 
 type GameState struct {
 	Player    *PlayerData
+	Startup   *StartupData
 	Character *CharacterData
 	Activity  *ActivityData
 	PingFn    func(state *GameState)

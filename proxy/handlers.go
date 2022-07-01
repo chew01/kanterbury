@@ -34,8 +34,11 @@ func (p *Proxy) handleReq(req *http.Request, _ *goproxy.ProxyCtx) (*http.Request
 		switch opArgs[1] {
 		case "writeActionLog":
 			var player PlayerData
+			var startup StartupData
 			utils.Must(json.Unmarshal(body, &player))
+			utils.Must(json.Unmarshal(body, &startup))
 			p.State.Player = &player
+			p.State.Startup = &startup
 		case "writeRoundLog":
 			var activity ActivityData
 			utils.Must(json.Unmarshal(body, &activity))
@@ -45,8 +48,11 @@ func (p *Proxy) handleReq(req *http.Request, _ *goproxy.ProxyCtx) (*http.Request
 				p.State.Activity = &ActivityData{}
 			}
 		default:
+			var player PlayerData
 			var character CharacterData
+			utils.Must(json.Unmarshal(body, &player))
 			utils.Must(json.Unmarshal(body, &character))
+			p.State.Player = &player
 			p.State.Character = &character
 		}
 

@@ -4,7 +4,10 @@ type PlayerData struct {
 	PlayerID  string `json:"playerId"`
 	AppID     string `json:"appId"`
 	GameWorld string `json:"gameWorld"`
-	StartTime int64  `json:"modTime"`
+}
+
+type StartupData struct {
+	StartTime int64 `json:"modTime"`
 }
 
 type CharacterData struct {
