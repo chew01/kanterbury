@@ -27,7 +27,7 @@ func newGameState() *GameState {
 // AddHook adds a hook function that will be executed with the game state pointer when the state is updated
 func (gs *GameState) AddHook(key string, fn func(state *GameState)) error {
 	if gs.Hooks[key] != nil {
-		return errors.New("Failed to add hook to game state: already contains key " + key)
+		return errors.New("failed to add hook to game state: already contains key " + key)
 	}
 	gs.Hooks[key] = fn
 	return nil
@@ -36,7 +36,7 @@ func (gs *GameState) AddHook(key string, fn func(state *GameState)) error {
 // RemoveHook removes an existing hook function with the given key
 func (gs *GameState) RemoveHook(key string) error {
 	if gs.Hooks[key] == nil {
-		return errors.New("Failed to remove hook to game state: does not contain key " + key)
+		return errors.New("failed to remove hook to game state: does not contain key " + key)
 	}
 	gs.Hooks[key] = nil
 	return nil

@@ -1,7 +1,7 @@
 package proxy
 
 import (
-	"fmt"
+	"github.com/chew01/kanterbury/log"
 	"github.com/chew01/kanterbury/utils"
 	"github.com/elazarl/goproxy"
 	"net/http"
@@ -18,6 +18,7 @@ const (
 type Proxy struct {
 	Server *goproxy.ProxyHttpServer
 	State  *GameState
+	log.Logger
 }
 
 // NewProxy returns a proxy instance and generates a key pair if not present in executable directory
@@ -27,14 +28,18 @@ func NewProxy() *Proxy {
 
 	_, certStatErr := os.Stat(certPath)
 	_, keyStatErr := os.Stat(keyPath)
-	proxy := &Proxy{Server: server, State: state}
+	proxy := &Proxy{
+		Server: server,
+		State:  state,
+		Logger: log.New(true, "/dev/null", 0),
+	}
 
 	if os.IsNotExist(certStatErr) || os.IsNotExist(keyStatErr) {
-		fmt.Println("Certificate file was not found. Generating CA...")
+		proxy.Println("Certificate file was not found. Generating CA...")
 		if err := utils.GenerateCA(certPath, keyPath); err != nil {
 			panic(err)
 		}
-		fmt.Println("Cert and key saved in " + utils.BinDir)
+		proxy.Printf("Cert and key saved in %s\n", utils.BinDir)
 	} else {
 		utils.Must(certStatErr)
 		utils.Must(keyStatErr)
@@ -55,12 +60,12 @@ func (p *Proxy) Start() {
 
 	go func() {
 		<-sigs
-		fmt.Println("Shutting down")
+		p.Println("Shutting down")
 		os.Exit(0)
 	}()
 
 	ipstring := utils.GetOutboundIP()
 
-	fmt.Printf("Proxy server listening on %s:8080\n", ipstring)
+	p.Printf("Proxy server listening on %s:8080\n", ipstring)
 	utils.Must(http.ListenAndServe(":8080", p.Server))
 }
