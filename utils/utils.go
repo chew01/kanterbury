@@ -16,6 +16,7 @@ func GetOutboundIP() string {
 	return localAddr.IP.String()
 }
 
+// Must is a panic check for must-fail errors
 func Must(err error) {
 	if err != nil {
 		panic(err)
