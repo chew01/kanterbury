@@ -40,7 +40,7 @@ func certTemplate() (*x509.Certificate, error) {
 	return &template, nil
 }
 
-// Helper function to create certificate, and in PEM format
+// Helper function to create and return pointer to certificate, and certificate in PEM format
 func createCert(template, parent *x509.Certificate, publicKey *rsa.PublicKey, privateKey *rsa.PrivateKey) (cert *x509.Certificate, certPEM []byte, err error) {
 	certDER, err := x509.CreateCertificate(rand.Reader, template, parent, publicKey, privateKey)
 	if err != nil {
@@ -57,7 +57,7 @@ func createCert(template, parent *x509.Certificate, publicKey *rsa.PublicKey, pr
 	return cert, certPEM, nil
 }
 
-// GenerateCA generates a new key pair and saves at the given paths
+// GenerateCA generates a new key pair and saves at the given certPath and keyPath
 func GenerateCA(certPath, keyPath string) error {
 	rootKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {

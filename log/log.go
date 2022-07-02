@@ -12,19 +12,21 @@ import (
 	"runtime"
 )
 
+// Logger interfaces functions that the custom log-level logger must have
 type Logger interface {
 	Printf(string, ...interface{})
 	Println(...interface{})
 }
 
-type kLog struct {
+// KLog is the basic logger struct that contains a file logger instance and stdout logger instance
+type KLog struct {
 	fileLogger   *log.Logger
 	stdoutLogger *log.Logger
 }
 
 // New initializes and returns a new instance of Logger
 func New(stdout bool, filePath string, flags int) Logger {
-	logger := &kLog{}
+	logger := &KLog{}
 
 	// Add color compatibility for Windows
 	var output io.Writer
@@ -57,7 +59,8 @@ func New(stdout bool, filePath string, flags int) Logger {
 	return logger
 }
 
-func (log *kLog) output(calldepth int, prefixColor func(interface{}) aurora.Value, prefix, str string) {
+// Helper function for handling logger output
+func (log *KLog) output(calldepth int, prefixColor func(interface{}) aurora.Value, prefix, str string) {
 	if log == nil {
 		return
 	}
@@ -79,12 +82,12 @@ func (log *kLog) output(calldepth int, prefixColor func(interface{}) aurora.Valu
 
 // Printf calls Output to print to the standard logger.
 // Arguments are handled in the manner of fmt.Printf.
-func (log *kLog) Printf(format string, v ...interface{}) {
+func (log *KLog) Printf(format string, v ...interface{}) {
 	log.output(2, aurora.Green, "INFO ", fmt.Sprintf(format, v...))
 }
 
 // Println calls Output to print to the standard logger.
 // Arguments are handled in the manner of fmt.Println.
-func (log *kLog) Println(v ...interface{}) {
+func (log *KLog) Println(v ...interface{}) {
 	log.output(2, aurora.Green, "INFO ", fmt.Sprintln(v...))
 }

@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// GameState holds data related to the game state obtained via the proxy
 type GameState struct {
 	Player    *PlayerData
 	Startup   *StartupData
@@ -14,7 +15,8 @@ type GameState struct {
 	Hooks     map[string]func(state *GameState)
 }
 
-func newGameState() *GameState {
+// Initialize the game state to be attached to the proxy
+func initGameState() *GameState {
 	return &GameState{
 		Player:    &PlayerData{},
 		Startup:   &StartupData{StartTime: time.Now().Unix()},
@@ -42,17 +44,20 @@ func (gs *GameState) RemoveHook(key string) error {
 	return nil
 }
 
+// Helper function for updating PlayerData and pinging all hooked functions
 func (gs *GameState) updatePlayer(newData *PlayerData) {
 	newData.GameWorld = utils.FormatWorld(newData.GameWorld)
 	gs.Player = newData
 	gs.pingHooks()
 }
 
+// Helper function for updating StartupData and pinging all hooked functions
 func (gs *GameState) updateStartup(newData *StartupData) {
 	gs.Startup = newData
 	gs.pingHooks()
 }
 
+// Helper function for updating CharacterData and pinging all hooked functions
 func (gs *GameState) updateCharacter(newData *CharacterData) {
 	newData.Name = utils.FormatName(newData.Name)
 	newData.Level = utils.FormatLevel(newData.Level)
@@ -60,11 +65,13 @@ func (gs *GameState) updateCharacter(newData *CharacterData) {
 	gs.pingHooks()
 }
 
+// Helper function for updating ActivityData and pinging all hooked functions
 func (gs *GameState) updateActivity(newData *ActivityData) {
 	gs.Activity = newData
 	gs.pingHooks()
 }
 
+// Helper function for pinging all hooked functions in GameState
 func (gs *GameState) pingHooks() {
 	for _, fn := range gs.Hooks {
 		fn(gs)

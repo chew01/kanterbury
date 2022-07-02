@@ -16,12 +16,14 @@ const (
 	keyPath  = "key.pem"
 )
 
+// Options for Proxy initialization
 type Options struct {
 	LogPath  string
 	LogFlags int
 	Port     int
 }
 
+// Proxy struct contains server Options, the Server instance and the GameState updated by the proxy
 type Proxy struct {
 	Options *Options
 	Server  *goproxy.ProxyHttpServer
@@ -32,7 +34,7 @@ type Proxy struct {
 // NewProxy returns a proxy instance and generates a key pair if not present in executable directory
 func NewProxy(options *Options) *Proxy {
 	server := goproxy.NewProxyHttpServer()
-	state := newGameState()
+	state := initGameState()
 
 	_, certStatErr := os.Stat(certPath)
 	_, keyStatErr := os.Stat(keyPath)

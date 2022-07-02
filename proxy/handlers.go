@@ -11,12 +11,14 @@ import (
 	"strings"
 )
 
+// Handle man-in-the-middle HTTPS connections
 func (p *Proxy) handleHttps(host string, _ *goproxy.ProxyCtx) (*goproxy.ConnectAction, string) {
 	return goproxy.MitmConnect, host
 }
 
 var hostRegex = regexp.MustCompile(`gc-openapi-zinny3.kakaogames.com`)
 
+// Handle all requests through the proxy
 func (p *Proxy) handleReq(req *http.Request, _ *goproxy.ProxyCtx) (*http.Request, *http.Response) {
 	// Return if not game traffic
 	if !hostRegex.MatchString(req.URL.Host) {
@@ -68,6 +70,7 @@ func (p *Proxy) handleReq(req *http.Request, _ *goproxy.ProxyCtx) (*http.Request
 	return req, nil
 }
 
+// Handle all responses through the proxy
 func (p *Proxy) handleRes(res *http.Response, _ *goproxy.ProxyCtx) *http.Response {
 	return res
 }
