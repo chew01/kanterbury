@@ -40,6 +40,8 @@ func (p *Proxy) handleReq(req *http.Request, _ *goproxy.ProxyCtx) (*http.Request
 
 			p.State.updatePlayer(&player)
 			p.State.updateStartup(&startup)
+
+			p.Println("Login detected: updated player data and startup time.")
 		case "writeRoundLog":
 			var activity ActivityData
 			utils.Must(json.Unmarshal(body, &activity))
@@ -48,6 +50,8 @@ func (p *Proxy) handleReq(req *http.Request, _ *goproxy.ProxyCtx) (*http.Request
 			} else {
 				p.State.updateActivity(&ActivityData{})
 			}
+
+			p.Println("PvP activity detected: updated activity data.")
 		default:
 			var player PlayerData
 			var character CharacterData
@@ -56,6 +60,8 @@ func (p *Proxy) handleReq(req *http.Request, _ *goproxy.ProxyCtx) (*http.Request
 
 			p.State.updatePlayer(&player)
 			p.State.updateCharacter(&character)
+
+			p.Println("Inventory change detected: updated player and character data.")
 		}
 	}
 
