@@ -1,6 +1,7 @@
 package proxy
 
 import (
+	"fmt"
 	"github.com/chew01/kanterbury/log"
 	"github.com/chew01/kanterbury/utils"
 	"github.com/elazarl/goproxy"
@@ -15,23 +16,31 @@ const (
 	keyPath  = "key.pem"
 )
 
+type Options struct {
+	LogPath  string
+	LogFlags int
+	Port     int
+}
+
 type Proxy struct {
-	Server *goproxy.ProxyHttpServer
-	State  *GameState
+	Options *Options
+	Server  *goproxy.ProxyHttpServer
+	State   *GameState
 	log.Logger
 }
 
 // NewProxy returns a proxy instance and generates a key pair if not present in executable directory
-func NewProxy() *Proxy {
+func NewProxy(options *Options) *Proxy {
 	server := goproxy.NewProxyHttpServer()
 	state := newGameState()
 
 	_, certStatErr := os.Stat(certPath)
 	_, keyStatErr := os.Stat(keyPath)
 	proxy := &Proxy{
-		Server: server,
-		State:  state,
-		Logger: log.New(true, "/dev/null", 0),
+		Options: options,
+		Server:  server,
+		State:   state,
+		Logger:  log.New(true, options.LogPath, options.LogFlags),
 	}
 
 	if os.IsNotExist(certStatErr) || os.IsNotExist(keyStatErr) {
@@ -65,7 +74,8 @@ func (p *Proxy) Start() {
 	}()
 
 	ipstring := utils.GetOutboundIP()
+	addr := fmt.Sprintf(":%d", p.Options.Port)
 
-	p.Printf("Proxy server listening on %s:8080\n", ipstring)
-	utils.Must(http.ListenAndServe(":8080", p.Server))
+	p.Printf("Proxy server listening on %s%s\n", ipstring, addr)
+	utils.Must(http.ListenAndServe(addr, p.Server))
 }
