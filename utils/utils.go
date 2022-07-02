@@ -2,7 +2,16 @@ package utils
 
 import (
 	"net"
+	"os"
+	"path/filepath"
 )
+
+// BinDir returns the path of the executable
+var BinDir = func() string {
+	ex, err := os.Executable()
+	Must(err)
+	return filepath.Clean(filepath.Dir(ex) + "/")
+}()
 
 // GetOutboundIP returns preferred outbound IP of the machine
 func GetOutboundIP() string {

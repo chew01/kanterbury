@@ -38,17 +38,15 @@ func (p *Proxy) handleReq(req *http.Request, _ *goproxy.ProxyCtx) (*http.Request
 			utils.Must(json.Unmarshal(body, &player))
 			utils.Must(json.Unmarshal(body, &startup))
 
-			player.GameWorld = utils.FormatWorld(player.GameWorld)
-
-			p.State.Player = &player
-			p.State.Startup = &startup
+			p.State.updatePlayer(&player)
+			p.State.updateStartup(&startup)
 		case "writeRoundLog":
 			var activity ActivityData
 			utils.Must(json.Unmarshal(body, &activity))
 			if activity.EndTime == 0 {
-				p.State.Activity = &activity
+				p.State.updateActivity(&activity)
 			} else {
-				p.State.Activity = &ActivityData{}
+				p.State.updateActivity(&ActivityData{})
 			}
 		default:
 			var player PlayerData
@@ -56,15 +54,9 @@ func (p *Proxy) handleReq(req *http.Request, _ *goproxy.ProxyCtx) (*http.Request
 			utils.Must(json.Unmarshal(body, &player))
 			utils.Must(json.Unmarshal(body, &character))
 
-			player.GameWorld = utils.FormatWorld(player.GameWorld)
-			character.Name = utils.FormatName(character.Name)
-			character.Level = utils.FormatLevel(character.Level)
-
-			p.State.Player = &player
-			p.State.Character = &character
+			p.State.updatePlayer(&player)
+			p.State.updateCharacter(&character)
 		}
-
-		p.State.Ping()
 	}
 
 	return req, nil

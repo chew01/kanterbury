@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 )
 
 const (
@@ -21,25 +20,21 @@ type Proxy struct {
 	State  *GameState
 }
 
+// NewProxy returns a proxy instance and generates a key pair if not present in executable directory
 func NewProxy() *Proxy {
 	server := goproxy.NewProxyHttpServer()
-	state := &GameState{
-		Player:    &PlayerData{},
-		Startup:   &StartupData{StartTime: time.Now().Unix()},
-		Character: &CharacterData{},
-		Activity:  &ActivityData{},
-	}
+	state := newGameState()
 
 	_, certStatErr := os.Stat(certPath)
 	_, keyStatErr := os.Stat(keyPath)
 	proxy := &Proxy{Server: server, State: state}
 
 	if os.IsNotExist(certStatErr) || os.IsNotExist(keyStatErr) {
-		fmt.Println("Generating CA...")
+		fmt.Println("Certificate file was not found. Generating CA...")
 		if err := utils.GenerateCA(certPath, keyPath); err != nil {
 			panic(err)
 		}
-		println("Cert and key saved")
+		fmt.Println("Cert and key saved in " + utils.BinDir)
 	} else {
 		utils.Must(certStatErr)
 		utils.Must(keyStatErr)
@@ -53,6 +48,7 @@ func NewProxy() *Proxy {
 	return proxy
 }
 
+// Start the proxy.
 func (p *Proxy) Start() {
 	sigs := make(chan os.Signal)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
